@@ -4,12 +4,12 @@ namespace Budget.Application.Models
 {
     public class Income
     {
-        public int Id {set; get;}
+        public required int Id { get; init; }
 
-        public DateTime Month { set; get; } = DateTime.MinValue;
+        public required DateTime Month { get; set; } = DateTime.MinValue;
 
-        public decimal Amount { get; set; } = 0;
+        public required decimal Amount { get; set; } = 0;
 
-        public IncomeCategory Category { set; get; } = IncomeCategory.Salary;
+        public required IncomeCategory Category { set; get; } = IncomeCategory.Salary;
     }
 }
