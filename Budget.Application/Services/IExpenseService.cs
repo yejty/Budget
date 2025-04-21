@@ -1,4 +1,5 @@
 ﻿using Budget.Application.Models;
+using Budget.Contracts.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,14 @@ namespace Budget.Application.Services
 {
     public interface IExpenseService
     {
-        Task<bool> CreateAsync();
+        Task<bool> CreateAsync(CreateExpenseRequest request);
 
-        Task<Income?> GetAsync();
+        Task<Income?> GetAsync(int id);
 
         Task<IEnumerable<Income>> GetAllAsync();
 
-        Task<Income?> UpdateAsync();
+        Task<Income?> UpdateAsync(UpdateExpenseRequest request);
 
-        Task<bool> DeleteAsync();
+        Task<bool> DeleteAsync(int id);
     }
 }

@@ -1,3 +1,5 @@
+using Budget.Application.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -6,6 +8,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//builder.Services.AddApplication();
+// - better, need nuget package: microsoft extensions dependency injection abtractions for encapsulating for consumer to do not know how is application registered 
+builder.Services.AddSingleton<IIncomeRepository, IncomeRepository>();
+builder.Services.AddSingleton<IExpenseRepository, ExpenseRepository>();
 
 var app = builder.Build();
 

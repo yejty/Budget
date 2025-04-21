@@ -12,13 +12,12 @@ namespace Budget.Application.Repositories
     {
         Task<bool> CreateAsync(Income income);
 
-        Task<Income?> GetByIdAsync(int id);
+        Task<Income?> GetByIdAsync(Guid id);
 
         Task<IEnumerable<Income>> GetAllAsync();
 
         Task<bool> UpdateAsync(Income income);
 
-        Task<bool> DeleteByIdAsync(int id);
-
+        Task<bool> DeleteByIdAsync(Guid id);
     }
 }

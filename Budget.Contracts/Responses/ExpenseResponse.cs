@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Budget.Contracts.Responses
 {
-    internal class ExpenseResponse
+    public class ExpenseResponse
     {
+        public required Guid Id { get; set; }
+
+        public required DateTime Month { get; set; }
+
+        public required decimal Amount { get; set; }
+
+        public required IEnumerable<string> Category { get; init; } = Enumerable.Empty<string>();
     }
 }

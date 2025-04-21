@@ -1,4 +1,5 @@
 ﻿using Budget.Application.Models;
+using Budget.Contracts.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,17 @@ namespace Budget.Application.Services
             throw new NotImplementedException();
         }
 
+        public Task<bool> CreateAsync(CreateIncomeRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> DeleteAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }
@@ -29,7 +40,17 @@ namespace Budget.Application.Services
             throw new NotImplementedException();
         }
 
+        public Task<Income?> GetAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Income?> UpdateAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Income?> UpdateAsync(UpdateIncomeRequest request)
         {
             throw new NotImplementedException();
         }

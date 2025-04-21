@@ -9,12 +9,12 @@ namespace Budget.Application.Models
 {
     public class Expense
     {
-        public int Id { set; get; }
+        public required Guid Id { get; init; }
 
-        public DateTime Month { set; get; } = DateTime.MinValue;
+        public required DateTime Month { get; set; } = DateTime.MinValue;
 
-        public decimal Amount { get; set; } = 0;
+        public required decimal Amount { get; set; } = 0;
 
-        public ExpenseCategory Category { set; get; } = ExpenseCategory.Other;
+        public required IEnumerable<string> Category { get; init; } = Enumerable.Empty<string>();
     }
 }
