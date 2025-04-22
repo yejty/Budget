@@ -11,14 +11,14 @@ namespace Budget.Application.Services
 {
     public interface IIncomeService
     {
-        Task<bool> CreateAsync(CreateIncomeRequest request);
+        Task<bool> CreateAsync(Income income);
 
-        Task<Income?> GetAsync(int id);
+        Task<Income?> GetAsync(Guid id);
 
         Task<IEnumerable<Income>> GetAllAsync();
 
-        Task<Income?> UpdateAsync(UpdateIncomeRequest request);
+        Task<Income?> UpdateAsync(Income income);
 
-        Task<bool> DeleteAsync(int id);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

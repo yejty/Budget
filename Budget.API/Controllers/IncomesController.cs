@@ -29,7 +29,7 @@ namespace Budget.Controllers
                 return NotFound();
             }
             var response = income.MapToResponse();
-            return Ok(); 
+            return Ok(response); 
         }
 
         [HttpGet(ApiEndpoints.Incomes.GetAll)]

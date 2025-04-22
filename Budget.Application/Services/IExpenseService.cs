@@ -10,14 +10,14 @@ namespace Budget.Application.Services
 {
     public interface IExpenseService
     {
-        Task<bool> CreateAsync(CreateExpenseRequest request);
+        Task<bool> CreateAsync(Expense expense);
 
-        Task<Income?> GetAsync(int id);
+        Task<Expense?> GetAsync(Guid id);
 
-        Task<IEnumerable<Income>> GetAllAsync();
+        Task<IEnumerable<Expense> GetAllAsync();
+        
+        Task<Expense?> UpdateAsync(Expense expense);
 
-        Task<Income?> UpdateAsync(UpdateExpenseRequest request);
-
-        Task<bool> DeleteAsync(int id);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

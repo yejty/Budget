@@ -1,6 +1,9 @@
 using Budget.Application.Repositories;
+using Budget.Application;
+using Budget.Application.Database;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 // Add services to the container.
 
@@ -9,10 +12,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddApplication();
-// - better, need nuget package: microsoft extensions dependency injection abtractions for encapsulating for consumer to do not know how is application registered 
-builder.Services.AddSingleton<IIncomeRepository, IncomeRepository>();
-builder.Services.AddSingleton<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddApplication();
+builder.Services.AddDatabase(config["Database:ConnectionString"]);
+//builder.Services.AddSingleton<IIncomeRepository, IncomeRepository>();
+//builder.Services.AddSingleton<IExpenseRepository, ExpenseRepository>();
 
 var app = builder.Build();
 
@@ -28,5 +31,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var dbInitializer = app.Services.GetRequiredService<DbInitializer>();
+await dbInitializer.InitializeAsync();
 
 app.Run();

@@ -1,4 +1,6 @@
-﻿using Budget.Application.Models;
+﻿using Budget.Application.Database;
+using Budget.Application.Models;
+using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,41 +11,88 @@ namespace Budget.Application.Repositories
 {
     public class ExpenseRepository : IExpenseRepository
     {
-        private readonly List<Expense> _expenses = new();
+        private readonly IDbConnectionFactory _dbConnectionFactory;
 
-        public Task<bool> CreateAsync(Expense expense)
+        public ExpenseRepository(IDbConnectionFactory dbConnectionFactory)
         {
-            _expenses.Add(expense);
-            return Task.FromResult(true);
+            _dbConnectionFactory = dbConnectionFactory;
         }
 
-        public Task<bool> DeleteByIdAsync(Guid id)
+        public async Task<bool> CreateAsync(Expense expense)
         {
-            var removedCount = _expenses.RemoveAll(x => x.Id == id);
-            var movieRemoved = removedCount > 0;
-            return Task.FromResult(movieRemoved);
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                insert into expenses (id, month, amount, category)
+                values (@Id, @Month, @Amount, @Category)
+                """, expense));
+
+            transaction.Commit();
+
+            return result > 0;
         }
 
-        public Task<IEnumerable<Expense>> GetAllAsync()
+        public async Task<bool> DeleteByIdAsync(Guid id)
         {
-            return Task.FromResult(_expenses.AsEnumerable());
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(
+               new CommandDefinition("""
+                    DELETE FROM expenses
+                    WHERE id = @id
+                """, new { id }));
+
+            transaction.Commit();
+            return result > 0;
         }
 
-        public Task<Expense?> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<Expense>> GetAllAsync()
         {
-            var income = _expenses.SingleOrDefault(x => x.Id == id);
-            return Task.FromResult(income);
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            var expenses = await connection.QueryAsync<Expense>(
+                new CommandDefinition("""
+                SELECT * FROM expenses
+                """));
+
+            return expenses;
         }
 
-        public Task<bool> UpdateAsync(Expense expense)
+        public async Task<Expense?> GetByIdAsync(Guid id)
         {
-            var incomeIndex = _expenses.FindIndex(x => x.Id == expense.Id);
-            if (incomeIndex == -1)
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            var expense = await connection.QuerySingleOrDefaultAsync<Expense>(
+                new CommandDefinition("""
+                select * from expenses where id = @id
+                """, new { id }));
+
+            if (expense == null)
             {
-                return Task.FromResult(false);
+                return null;
             }
-            _expenses[incomeIndex] = expense;
-            return Task.FromResult(true);
+
+            return expense;
+        }
+
+        public async Task<bool> UpdateAsync(Expense expense)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(
+               new CommandDefinition("""
+                    UPDATE expenses
+                    SET month = @Month,
+                    amount = @Amount,
+                    category = @Category
+                    WHERE id = @id
+                """, expense));
+
+            transaction.Commit();
+            return result > 0;
         }
     }
 }

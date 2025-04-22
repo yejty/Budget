@@ -10,11 +10,11 @@ namespace Budget.Contracts.Responses
     {
         public required Guid Id { get; set; }
 
-        public required DateTime Month { get; init; }
+        public required DateTime Month { get; set; }
 
-        public required decimal Amount { get; init; }
+        public required decimal Amount { get; set; }
 
-        public required IEnumerable<string> Category { get; init; } = Enumerable.Empty<string>();
+        public required string Category { get; set; } = string.Empty;
     }
 
 

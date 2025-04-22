@@ -34,8 +34,8 @@ namespace Budget.API.Controllers
         public async Task<IActionResult> GetAllExpenses()
         {
             var expenses = await _expenseRepository.GetAllAsync();
-            var responses= expenses.MapToResponse();
-            return Ok();
+            var response = expenses.MapToResponse();
+            return Ok(response);
         }
 
         [HttpPost(ApiEndpoints.Expenses.Create)]
@@ -48,14 +48,26 @@ namespace Budget.API.Controllers
         }
 
         [HttpPut(ApiEndpoints.Expenses.Update)]
-        public IActionResult UpdateExpense([FromRoute]Guid id, [FromBody]UpdateExpenseRequest updateExpenseRequest)
+        public async Task <IActionResult> UpdateExpense([FromRoute]Guid id, [FromBody]UpdateExpenseRequest request)
         {
-            return Ok();
+            var expense = request.MapToExpense(id);
+            var updated = await _expenseRepository.UpdateAsync(expense);
+            if (!updated)
+            {
+                return NotFound();
+            }
+            var response = expense.MapToResponse();
+            return Ok(response);
         }
 
         [HttpDelete(ApiEndpoints.Expenses.Delete)]
-        public IActionResult DeleteExpense([FromRoute]Guid id)
+        public async Task<IActionResult> DeleteExpense([FromRoute]Guid id)
         {
+            var deleted = await _expenseRepository.DeleteByIdAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
             return NoContent();
         }
     }

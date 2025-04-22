@@ -68,7 +68,7 @@ namespace Budget.API.Mapping
         {
             var expense = new Expense
             {
-                Id = Guid.NewGuid(),
+                Id = id,
                 Month = request.Month,
                 Amount = request.Amount,
                 Category = request.Category

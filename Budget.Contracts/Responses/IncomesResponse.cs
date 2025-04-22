@@ -8,6 +8,6 @@ namespace Budget.Contracts.Responses
 {
     public class IncomesResponse
     {
-        public required IEnumerable<IncomeResponse> Items { get; init; } = Enumerable.Empty<IncomeResponse>(); 
+        public required IEnumerable<IncomeResponse> Items { get; set; } = Enumerable.Empty<IncomeResponse>(); 
     }
 }

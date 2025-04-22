@@ -12,6 +12,6 @@ namespace Budget.Contracts.Requests
 
         public required decimal Amount { get; init; }
 
-        public required IEnumerable<string> Category { get; init; } = Enumerable.Empty<string>();
+        public required string Category { get; init; } = string.Empty;
     }
 }

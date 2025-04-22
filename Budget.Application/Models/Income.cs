@@ -10,7 +10,7 @@ namespace Budget.Application.Models
 
         public required decimal Amount { get; set; } = 0;
 
-        public required IEnumerable<string> Category { get; init; } = Enumerable.Empty<string>();
+        public required string Category { get; set; } = string.Empty;
 
     }
 }

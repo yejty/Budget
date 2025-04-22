@@ -1,5 +1,8 @@
-﻿using Budget.Application.Models;
+﻿using Budget.Application.Database;
+using Budget.Application.Models;
+using Dapper;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,41 +14,88 @@ namespace Budget.Application.Repositories
 {
     public class IncomeRepository : IIncomeRepository
     {
-        private readonly List<Income> _incomes = new();
+        private readonly IDbConnectionFactory _dbConnectionFactory;
 
-        public Task<bool> CreateAsync(Income income)
+        public IncomeRepository(IDbConnectionFactory dbConnectionFactory)
         {
-            _incomes.Add(income);
-            return Task.FromResult(true);
+            _dbConnectionFactory = dbConnectionFactory;  
         }
 
-        public Task<bool> DeleteByIdAsync(Guid id)
+        public async Task<bool> CreateAsync(Income income)
         {
-            var removedCount = _incomes.RemoveAll(x => x.Id == id);
-            var movieRemoved = removedCount > 0;
-            return Task.FromResult(movieRemoved);
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                insert into incomes (id, month, amount, category)
+                values (@Id, @Month, @Amount, @Category)
+                """, income));
+
+            transaction.Commit();
+
+            return result > 0;
         }
 
-        public Task<IEnumerable<Income>> GetAllAsync()
+        public async Task<bool> DeleteByIdAsync(Guid id)
         {
-            return Task.FromResult(_incomes.AsEnumerable());
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(
+               new CommandDefinition("""
+                    DELETE FROM incomes
+                    WHERE id = @id
+                """, new { id }));
+
+            transaction.Commit();
+            return result > 0;
         }
 
-        public Task<Income?> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<Income>> GetAllAsync()
         {
-            var income = _incomes.SingleOrDefault(x => x.Id == id);
-            return Task.FromResult(income);
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+
+            var incomes = await connection.QueryAsync<Income>(
+                new CommandDefinition("""
+                SELECT * FROM incomes
+                """));
+
+            return incomes;
         }
 
-        public Task<bool> UpdateAsync(Income income)
+        public async Task<Income?> GetByIdAsync(Guid id)
         {
-            var incomeIndex = _incomes.FindIndex(x => x.Id == income.Id);
-            if (incomeIndex == -1) 
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            
+            var income = await connection.QuerySingleOrDefaultAsync<Income>(
+                new CommandDefinition("""
+                select * from incomes where id = @id
+                """, new { id }));
+
+            if (income == null)
             {
-                return Task.FromResult(false);
+                return null;
             }
-            _incomes[incomeIndex] = income;
-            return Task.FromResult(true);
+            
+            return income;
+        }
+
+        public async Task<bool> UpdateAsync(Income income)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(
+               new CommandDefinition("""
+                    UPDATE incomes
+                    SET month = @Month,
+                    amount = @Amount,
+                    category = @Category
+                    WHERE id = @Id
+                """, income));
+
+            transaction.Commit();
+            return result > 0;
         }
     }
 }

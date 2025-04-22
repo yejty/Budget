@@ -1,4 +1,5 @@
 ﻿using Budget.Application.Models;
+using Budget.Application.Repositories;
 using Budget.Contracts.Requests;
 using System;
 using System.Collections.Generic;
@@ -10,49 +11,31 @@ namespace Budget.Application.Services
 {
     public class IncomeService : IIncomeService
     {
-        public Task<bool> CreateAsync()
+        private readonly IIncomeRepository _incomeRepository;
+
+        public Task<bool> CreateAsync(Income income)
         {
-            throw new NotImplementedException();
+            return _incomeRepository.CreateAsync(income);
         }
 
-        public Task<bool> CreateAsync(CreateIncomeRequest request)
+        public Task<bool> DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> DeleteAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
+            return _incomeRepository.DeleteByIdAsync(id);
         }
 
         public Task<IEnumerable<Income>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return _incomeRepository.GetAllAsync();
         }
 
-        public Task<Income?> GetAsync()
+        public Task<Income?> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return _incomeRepository.GetByIdAsync(id);
         }
 
-        public Task<Income?> GetAsync(int id)
+        public Task<Income?> UpdateAsync(Income income)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Income?> UpdateAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Income?> UpdateAsync(UpdateIncomeRequest request)
-        {
-            throw new NotImplementedException();
+            return _incomeRepository.UpdateAsync(income);
         }
     }
 }
