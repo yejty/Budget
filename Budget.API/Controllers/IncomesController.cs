@@ -13,17 +13,17 @@ namespace Budget.Controllers
     [ApiController]
     public class IncomesController : Controller
     {
-        private readonly IIncomeRepository _incomeRepository;
+        private readonly IIncomeService _incomeService;
 
-        public IncomesController(IIncomeRepository incomeRepository)
+        public IncomesController(IIncomeService incomeService)
         {
-            _incomeRepository = incomeRepository;
+            _incomeService = incomeService;
         }
 
         [HttpGet(ApiEndpoints.Incomes.Get)]
         public async Task<IActionResult> GetIncome([FromRoute] Guid id)
         {
-            var income = await _incomeRepository.GetByIdAsync(id);
+            var income = await _incomeService.GetAsync(id);
             if (income == null)
             {
                 return NotFound();
@@ -35,7 +35,7 @@ namespace Budget.Controllers
         [HttpGet(ApiEndpoints.Incomes.GetAll)]
         public async Task<IActionResult> GetAllIncomes()
         {
-            var incomes = await _incomeRepository.GetAllAsync();
+            var incomes = await _incomeService.GetAllAsync();
             var incomesResponse = incomes.MapToResponse();
             return Ok(incomesResponse);
         }
@@ -44,7 +44,7 @@ namespace Budget.Controllers
         public async Task<IActionResult> CreateIncome([FromBody] CreateIncomeRequest request)
         {
             var income = request.MapToIncome();
-            await _incomeRepository.CreateAsync(income);
+            await _incomeService.CreateAsync(income);
             var response = income.MapToResponse();
             return CreatedAtAction(nameof(GetIncome), new { id = income.Id}, response);
         }
@@ -53,8 +53,8 @@ namespace Budget.Controllers
         public async Task<IActionResult> UpdateIncome([FromRoute] Guid id, [FromBody] UpdateIncomeRequest request)
         {
             var income = request.MapToIncome(id);
-            var updated = await _incomeRepository.UpdateAsync(income);
-            if (!updated)
+            var updatedIncome = await _incomeService.UpdateAsync(income);
+            if (updatedIncome is null)
             {
                 return NotFound();
             }
@@ -65,7 +65,7 @@ namespace Budget.Controllers
         [HttpDelete(ApiEndpoints.Incomes.Delete)]
         public async Task<IActionResult> DeleteIncome([FromRoute] Guid id)
         {
-            var deleted = await _incomeRepository.DeleteByIdAsync(id);
+            var deleted = await _incomeService.DeleteAsync(id);
             if (!deleted)
             {
                 return NotFound();

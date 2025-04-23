@@ -11,17 +11,17 @@ namespace Budget.API.Controllers
     [ApiController]
     public class ExpensesController : Controller
     {
-        private readonly IExpenseRepository _expenseRepository;
+        private readonly IExpenseService _expenseService;
 
-        public ExpensesController(IExpenseRepository expenseRepository) 
+        public ExpensesController(IExpenseService expenseService) 
         {
-            _expenseRepository = expenseRepository;
+            _expenseService = expenseService;
         }
 
         [HttpGet(ApiEndpoints.Expenses.Get)]
         public async Task<IActionResult> GetExpense([FromRoute]Guid id)
         {
-            var expense = await _expenseRepository.GetByIdAsync(id);
+            var expense = await _expenseService.GetAsync(id);
             if (expense == null)
             {
                 return NotFound();
@@ -33,7 +33,7 @@ namespace Budget.API.Controllers
         [HttpGet(ApiEndpoints.Expenses.GetAll)]
         public async Task<IActionResult> GetAllExpenses()
         {
-            var expenses = await _expenseRepository.GetAllAsync();
+            var expenses = await _expenseService.GetAllAsync();
             var response = expenses.MapToResponse();
             return Ok(response);
         }
@@ -42,7 +42,7 @@ namespace Budget.API.Controllers
         public async Task<IActionResult> CreateExpense([FromBody]CreateExpenseRequest request)
         {
             var expense = request.MapToExpense();
-            await _expenseRepository.CreateAsync(expense);
+            await _expenseService.CreateAsync(expense);
             var response = expense.MapToResponse();
             return CreatedAtAction(nameof(GetExpense), new { id = expense.Id }, response);;
         }
@@ -51,8 +51,8 @@ namespace Budget.API.Controllers
         public async Task <IActionResult> UpdateExpense([FromRoute]Guid id, [FromBody]UpdateExpenseRequest request)
         {
             var expense = request.MapToExpense(id);
-            var updated = await _expenseRepository.UpdateAsync(expense);
-            if (!updated)
+            var updatedExpense = await _expenseService.UpdateAsync(expense);
+            if (updatedExpense is null)
             {
                 return NotFound();
             }
@@ -63,7 +63,7 @@ namespace Budget.API.Controllers
         [HttpDelete(ApiEndpoints.Expenses.Delete)]
         public async Task<IActionResult> DeleteExpense([FromRoute]Guid id)
         {
-            var deleted = await _expenseRepository.DeleteByIdAsync(id);
+            var deleted = await _expenseService.DeleteAsync(id);
             if (!deleted)
             {
                 return NotFound();

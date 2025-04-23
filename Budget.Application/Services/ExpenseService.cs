@@ -33,9 +33,10 @@ namespace Budget.Application.Services
             return _expenseRepository.GetByIdAsync(id);
         }
 
-        public Task<Expense?> UpdateAsync(Expense expense)
+        public async Task<Expense?> UpdateAsync(Expense expense)
         {
-            return _expenseRepository.UpdateAsync(expense);
+            await _expenseRepository.UpdateAsync(expense);
+            return expense;
         }
     }
 }

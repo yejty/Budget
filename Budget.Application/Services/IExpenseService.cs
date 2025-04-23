@@ -14,7 +14,7 @@ namespace Budget.Application.Services
 
         Task<Expense?> GetAsync(Guid id);
 
-        Task<IEnumerable<Expense> GetAllAsync();
+        Task<IEnumerable<Expense>> GetAllAsync();
         
         Task<Expense?> UpdateAsync(Expense expense);
 

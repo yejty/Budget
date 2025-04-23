@@ -33,9 +33,10 @@ namespace Budget.Application.Services
             return _incomeRepository.GetByIdAsync(id);
         }
 
-        public Task<Income?> UpdateAsync(Income income)
+        public async Task<Income?> UpdateAsync(Income income)
         {
-            return _incomeRepository.UpdateAsync(income);
+            await _incomeRepository.UpdateAsync(income);
+            return income;
         }
     }
 }
